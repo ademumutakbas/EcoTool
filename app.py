@@ -4,48 +4,65 @@ import itertools
 st.title("Skill Point Optimizasyon Aracı")
 
 # ---------------- Kullanıcı girdileri ----------------
-q_price = st.number_input("Entrepreneur ile üreteceğin ürünün PP başına market fiyatı", min_value=0.0, step=0.001, format="%.3f")
-q_bonus = st.number_input("Entrepreneur şirket bonusu %", min_value=0.0, step=0.1, format="%.1f")
+# Ondalıklı sayılar için text_input kullanıyoruz, sonra float'a çeviriyoruz
+q_price_str = st.text_input("Entrepreneur ile üreteceğin ürünün PP başına market fiyatı", "0.05")
+q_price = float(q_price_str.replace(",", "."))
 
-z = st.number_input("Energy ile PP başına maaş", min_value=0.0, step=0.001, format="%.3f")
-tax = st.number_input("Maaş vergisi %", min_value=0.0, step=0.1, format="%.1f")
+q_bonus_str = st.text_input("Şirketinin bonusu %", "31")
+q_bonus = float(q_bonus_str.replace(",", "."))
 
-k_price = st.number_input("Kendi şirketinde ürettiğin ürünün PP başına fiyatı", min_value=0.0, step=0.001, format="%.3f")
-k_bonus = st.number_input("Kendi şirketlerinin bonusu %", min_value=0.0, step=0.1, format="%.1f")
+z_str = st.text_input("Energy ile PP başına maaş", "0.07")
+z = float(z_str.replace(",", "."))
+
+tax_str = st.text_input("Maaş vergisi %", "5")
+tax = float(tax_str.replace(",", "."))
+
+k_price_str = st.text_input("Kendi şirketinde ürettiğin ürünün PP başına market fiyatı", "0.05")
+k_price = float(k_price_str.replace(",", "."))
+
+k_bonus_str = st.text_input("Şirketlerinin bonusu %", "31")
+k_bonus = float(k_bonus_str.replace(",", "."))
 
 engine_level = st.number_input("Automated Engine Seviyesi (1-7)", min_value=1, max_value=7, step=1)
 S = st.number_input("Toplam Skill Puanı", min_value=1, step=1)
 current_companies = st.number_input("Mevcut şirket sayısı (0 girersen kısıt kalkar)", min_value=0, max_value=12, step=1)
 
 if st.button("Hesapla"):
+    # ---------------- Hesaplamalar ----------------
     Q = q_price * (1 + q_bonus/100)
+
     engine_values = {1:24,2:48,3:72,4:96,5:120,6:144,7:168}
     K = k_price * (1 + k_bonus/100) * engine_values[engine_level]
 
-    levels = range(0, 11)
     def skill_cost(level):
-        return level * (level + 1) // 2
-
-    # Lc seviyeleri
-    base_companies = 2
-    if current_companies == 0:
-        lc_levels = range(0, 11)
-    else:
-        opened_companies = max(current_companies - base_companies, 0)
-        lc_levels = range(0, opened_companies + 1)
+        return max(level*(level+1)//2, 0)  # level 0 için 0, level N için 1+2+...+N
 
     best_Z = -1
     best_combination = None
+
+    levels = range(0, 11)  # Skill seviyeleri 0-10
+
+    # Company Limit Lc için kısıt
+    base_companies = 2
+    if current_companies == 0:
+        lc_max = 10  # kısıt yok, full 12 şirket hakkı
+    else:
+        opened_companies = max(current_companies - base_companies, 0)
+        lc_max = opened_companies
+    lc_levels = range(0, lc_max+1)
 
     for Lg, Lw, Lp, Lc in itertools.product(levels, levels, levels, lc_levels):
         cost = skill_cost(Lg) + skill_cost(Lw) + skill_cost(Lp) + skill_cost(Lc)
         if cost > S:
             continue
+
         Xp = 10 + 3*Lp
         Xg = (30 + 5*Lg) * Xp / 10
         Xw = (30 + 10*Lw) * Xp / 10
-        Xc = current_companies + Lc if current_companies > 0 else base_companies + Lc
-        Z_net = z * (1 - tax/100)
+        Xc = base_companies + Lc
+
+        Z_net = z * (1 - tax/100)  # maaş vergisi uygulanıyor
+
         Z_total = 2.4*Q*Xg + 2.4*Z_net*Xw + K*Xc
 
         if Z_total > best_Z:
@@ -53,13 +70,16 @@ if st.button("Hesapla"):
             best_combination = (Lg, Lw, Lp, Lc)
             best_total_companies = Xc
 
+    # ---------------- Sonuç ----------------
     if best_combination:
         st.success(f"""
-        **En iyi kombinasyon:**
-        - Lg (Entrepreneurship): {best_combination[0]}
-        - Lw (Energy): {best_combination[1]}
-        - Lp (Production): {best_combination[2]}
-        - Lc (Company Limit): {best_combination[3]}
-        - Toplam şirket: {best_total_companies}
-        - Max Z: {round(best_Z, 2)}
-        """)
+**En iyi kombinasyon:**
+- Lg (Entrepreneurship): {best_combination[0]}
+- Lw (Energy): {best_combination[1]}
+- Lp (Production): {best_combination[2]}
+- Lc (Company Limit): {best_combination[3]}
+- Toplam şirket: {best_total_companies}
+- Max Z (Günlük Kazanç): {round(best_Z, 2)}
+""")
+    else:
+        st.warning("Geçerli bir kombinasyon bulunamadı!")
