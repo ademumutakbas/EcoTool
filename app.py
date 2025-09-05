@@ -19,14 +19,14 @@ images = {
     "company_limit": Image.open(".devcontainer/company_limit.png")
 }
 
-ICON_WIDTH = 40  # input ikonları için boyut
+INPUT_ICON_WIDTH = 100  # input ikonları için boyut
 RESULT_ICON_WIDTH = 50  # sonuç ikonları için boyut
 
 # ---------------- Kullanıcı girdileri ----------------
 def get_float_input_with_icon(label, img, default="0.05"):
     col1, col2 = st.columns([1, 5])
     with col1:
-        st.image(img, width=ICON_WIDTH)
+        st.image(img, width=INPUT_ICON_WIDTH)
     with col2:
         val_str = st.text_input(label, value=default)
         try:
@@ -45,7 +45,12 @@ tax_rate = get_float_input_with_icon("Maaş vergisi % (örn. 5)", images["tax"])
 k_price = get_float_input_with_icon("Kendi şirketinde ürettiğin ürünün PP başına market fiyatı (örn. 0.05)", images["market"])
 k_bonus = get_float_input_with_icon("Şirketlerinin bonusu % (örn. 31)", images["comp_bonus"])
 
-engine_level_str = st.text_input("Automated Engine Seviyesi (1-7)", "4")
+# Yeni alanlar
+col1, col2 = st.columns([1,5])
+with col1:
+    st.image(images["automated_engine"], width=INPUT_ICON_WIDTH)
+with col2:
+    engine_level_str = st.text_input("Automated Engine Seviyesi (1-7)", "4")
 try:
     engine_level = int(engine_level_str)
     if engine_level < 1 or engine_level > 7:
@@ -54,14 +59,22 @@ except ValueError:
     st.warning("Lütfen 1 ile 7 arasında bir sayı girin.")
     st.stop()
 
-S_str = st.text_input("Toplam Skill Puanı", "56")
+col1, col2 = st.columns([1,5])
+with col1:
+    st.image(images["skill_point"], width=INPUT_ICON_WIDTH)
+with col2:
+    S_str = st.text_input("Toplam Skill Puanı", "56")
 try:
     S = int(S_str)
 except ValueError:
     st.warning("Lütfen geçerli bir tam sayı girin.")
     st.stop()
 
-current_companies_str = st.text_input("Mevcut şirket sayısı (0 girersen kısıt kalkar)", "0")
+col1, col2 = st.columns([1,5])
+with col1:
+    st.image(images["companies"], width=INPUT_ICON_WIDTH)
+with col2:
+    current_companies_str = st.text_input("Mevcut şirket sayısı (0 girersen kısıt kalkar)", "0")
 try:
     current_companies = int(current_companies_str)
     if current_companies < 0 or current_companies > 12:
@@ -76,14 +89,14 @@ if st.button("Hesapla"):
     engine_values = {1:24,2:48,3:72,4:96,5:120,6:144,7:168}
     K = k_price * (1 + k_bonus/100) * engine_values[engine_level]
 
-    levels = range(0, 11)  # Skill seviyeleri 0-10
+    levels = range(0, 11)
     def skill_cost(level):
         return level*(level+1)//2
 
     base_companies = 2
     opened_companies = max(current_companies - base_companies, 0)
     if current_companies == 0:
-        lc_levels = range(0, 11)  # kısıt yok
+        lc_levels = range(0, 11)
     else:
         lc_max = opened_companies
         lc_levels = range(0, lc_max+1)
@@ -112,25 +125,26 @@ if st.button("Hesapla"):
     # ---------------- Sonuç ----------------
     if best_combination:
         st.markdown("### En iyi kombinasyon:")
-        result_cols = st.columns([1, 5])
+
+        result_cols = st.columns([1,5])
         with result_cols[0]:
             st.image(images["entrepreneurship"], width=RESULT_ICON_WIDTH)
         with result_cols[1]:
             st.write(f"Lg (Entrepreneurship): {best_combination[0]}")
 
-        result_cols = st.columns([1, 5])
+        result_cols = st.columns([1,5])
         with result_cols[0]:
             st.image(images["energy"], width=RESULT_ICON_WIDTH)
         with result_cols[1]:
             st.write(f"Lw (Energy): {best_combination[1]}")
 
-        result_cols = st.columns([1, 5])
+        result_cols = st.columns([1,5])
         with result_cols[0]:
             st.image(images["production"], width=RESULT_ICON_WIDTH)
         with result_cols[1]:
             st.write(f"Lp (Production): {best_combination[2]}")
 
-        result_cols = st.columns([1, 5])
+        result_cols = st.columns([1,5])
         with result_cols[0]:
             st.image(images["company_limit"], width=RESULT_ICON_WIDTH)
         with result_cols[1]:
@@ -138,10 +152,8 @@ if st.button("Hesapla"):
 
         st.write(f"Toplam şirket: {best_total_companies}")
         st.write(f"Max Z (Günlük Max Kazanç): {round(best_Z,2)}")
-
     else:
         st.warning("Geçerli bir kombinasyon bulunamadı!")
 
 # ---------------- Alt bilgi ----------------
 st.markdown("Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)")
-
