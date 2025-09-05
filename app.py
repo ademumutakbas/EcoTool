@@ -3,15 +3,23 @@ import itertools
 
 st.title("Skill Point Optimizasyon Aracı")
 
+def get_float_input(label, default="0.05"):
+    val_str = st.text_input(label, value=default)
+    try:
+        return float(val_str)
+    except:
+        st.warning("Lütfen geçerli bir sayı girin (örn. 0.05)")
+        return 0.0
+
 # ---------------- Kullanıcı girdileri ----------------
-q_price = st.number_input("Entrepreneur ile üreteceğin ürünün PP başına market fiyatı", min_value=0.0, format="%.3f")
-q_bonus = st.number_input("Entrepreneurship için şirket bonusu %", min_value=0.0, format="%.1f")
+q_price = get_float_input("Entrepreneur ile üreteceğin ürünün PP başına market fiyatı")
+q_bonus = get_float_input("Entrepreneurship için şirket bonusu %", default="31")
 
-z = st.number_input("Energy ile PP başına maaş", min_value=0.0, format="%.3f")
-tax = st.number_input("Maaş vergisi %", min_value=0.0, format="%.1f")
+z = get_float_input("Energy ile PP başına maaş")
+tax = get_float_input("Maaş vergisi %", default="5")
 
-k_price = st.number_input("Kendi şirketinde ürettiğin ürünün PP başına fiyatı", min_value=0.0, format="%.3f")
-k_bonus = st.number_input("Şirketlerinin bonusu %", min_value=0.0, format="%.1f")
+k_price = get_float_input("Kendi şirketinde ürettiğin ürünün PP başına fiyatı")
+k_bonus = get_float_input("Şirketlerinin bonusu %", default="31")
 
 engine_level = st.number_input("Automated Engine Seviyesi (1-7)", min_value=1, max_value=7, step=1)
 S = st.number_input("Toplam Skill Puanı", min_value=1, step=1)
@@ -20,7 +28,6 @@ mevcut_sirket = st.number_input("Mevcut şirket sayısı (0 girersen kısıt kal
 st.markdown("---")
 
 if st.button("Hesapla"):
-    # ---------------- Hesaplamalar ----------------
     Q = q_price * (1 + q_bonus/100)
     engine_values = {1:24,2:48,3:72,4:96,5:120,6:144,7:168}
     K = k_price * (1 + k_bonus/100) * engine_values[engine_level]
@@ -39,7 +46,6 @@ if st.button("Hesapla"):
         if cost > S:
             continue
 
-        # Şirket kısıtı
         if mevcut_sirket > 0:
             max_openable = 12 - mevcut_sirket
             if Lc > max_openable:
@@ -57,7 +63,6 @@ if st.button("Hesapla"):
             best_combination = (Lg, Lw, Lp, Lc)
             best_total_companies = Xc
 
-    # ---------------- Sonuç ----------------
     if best_combination:
         st.success(f"""
 **En iyi kombinasyon:**
@@ -70,5 +75,4 @@ if st.button("Hesapla"):
         """)
 
 st.markdown("---")
-# ---------------- Footer ----------------
-st.markdown('Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)')
+st.markdown('Made by [Monarch](https://app.warera.io/region/6813b70c9403bc4170a5db34)')
