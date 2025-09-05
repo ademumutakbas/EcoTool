@@ -1,7 +1,7 @@
 import streamlit as st
 import itertools
 
-st.title("Skill Point Optimizasyon Aracı")
+st.title("Eco Skill Optimizer")
 
 # ---------------- Kullanıcı girdileri (text_input ile float dönüşümü) ----------------
 def get_float_input(label, default="0.05"):
@@ -107,3 +107,4 @@ if st.button("Hesapla"):
 
 # ---------------- Alt bilgi: Made by Monarch ----------------
 st.markdown("[Made by Monarch](https://app.warera.io/region/6813b70c9403bc4170a5db34)")
+
