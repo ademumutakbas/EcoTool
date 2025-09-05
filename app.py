@@ -12,7 +12,7 @@ k_bonus = float(input("Şirketinin bonusu %: "))
 engine_level = int(input("Automated Engine Seviyesi (1-7): "))
 
 S = int(input("Toplam Skill Puanı: "))
-current_companies = int(input("Mevcut şirket sayısı (0 girersen kısıt kalkar): "))
+current_companies = int(input("Mevcut şirket sayısı: "))
 
 # ---------------- Hesaplamalar ----------------
 Q = q_price * (1 + q_bonus/100)
@@ -36,9 +36,9 @@ if current_companies == 0:
     # kullanıcı 0 girerse kısıt kalkıyor, 12 şirket hakkı varmış gibi hesapla
     lc_levels = range(0, 11)
 else:
-    # açılabilir maksimum şirket = toplam 12 - mevcut şirket
-    max_openable = 12 - current_companies
-    lc_levels = range(0, max_openable + 1)
+    # açılabilir maksimum şirket = mevcut şirket - 2 (base)
+    opened_companies = max(current_companies - base_companies, 0)
+    lc_levels = range(0, opened_companies + 1)
 
 best_Z = -1
 best_combination = None
