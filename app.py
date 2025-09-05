@@ -106,5 +106,6 @@ if st.button("Hesapla"):
         st.warning("Geçerli bir kombinasyon bulunamadı!")
 
 # ---------------- Alt bilgi: Made by Monarch ----------------
-st.markdown("[Made by Monarch](https://app.warera.io/region/6813b70c9403bc4170a5db34)")
+st.markdown("Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)")
+
 
