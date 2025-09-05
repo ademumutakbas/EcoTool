@@ -1,74 +1,65 @@
+import streamlit as st
 import itertools
 
+st.title("Skill Point Optimizasyon Aracı")
+
 # ---------------- Kullanıcı girdileri ----------------
-q_price = float(input("Entrepreneur ile üreteceğin ürünün PP başına marketteki fiyatı (Virgül yerine NOKTA kullan): "))
-q_bonus = float(input("Şirketinin bonusu %: "))
+q_price = st.number_input("Entrepreneur ile üreteceğin ürünün PP başına market fiyatı", min_value=0.0, step=0.001, format="%.3f")
+q_bonus = st.number_input("Entrepreneur şirket bonusu %", min_value=0.0, step=0.1, format="%.1f")
 
-z = float(input("Energy ile PP başına maaş: "))
-tax_rate = float(input("Maaş vergisi %: "))
+z = st.number_input("Energy ile PP başına maaş", min_value=0.0, step=0.001, format="%.3f")
+tax = st.number_input("Maaş vergisi %", min_value=0.0, step=0.1, format="%.1f")
 
-k_price = float(input("Kendi şirketinde ürettiğin ürünün PP başına marketteki fiyatı: "))
-k_bonus = float(input("Şirketinin bonusu %: "))
-engine_level = int(input("Automated Engine Seviyesi (1-7): "))
+k_price = st.number_input("Kendi şirketinde ürettiğin ürünün PP başına fiyatı", min_value=0.0, step=0.001, format="%.3f")
+k_bonus = st.number_input("Kendi şirketlerinin bonusu %", min_value=0.0, step=0.1, format="%.1f")
 
-S = int(input("Toplam Skill Puanı: "))
-current_companies = int(input("Mevcut şirket sayısı: "))
+engine_level = st.number_input("Automated Engine Seviyesi (1-7)", min_value=1, max_value=7, step=1)
+S = st.number_input("Toplam Skill Puanı", min_value=1, step=1)
+current_companies = st.number_input("Mevcut şirket sayısı (0 girersen kısıt kalkar)", min_value=0, max_value=12, step=1)
 
-# ---------------- Hesaplamalar ----------------
-Q = q_price * (1 + q_bonus/100)
+if st.button("Hesapla"):
+    Q = q_price * (1 + q_bonus/100)
+    engine_values = {1:24,2:48,3:72,4:96,5:120,6:144,7:168}
+    K = k_price * (1 + k_bonus/100) * engine_values[engine_level]
 
-engine_values = {1:24,2:48,3:72,4:96,5:120,6:144,7:168}
-if engine_level not in engine_values:
-    raise ValueError("Automated Engine seviyesi 1-7 arasında olmalı!")
+    levels = range(0, 11)
+    def skill_cost(level):
+        return level * (level + 1) // 2
 
-K = k_price * (1 + k_bonus/100) * engine_values[engine_level]
+    # Lc seviyeleri
+    base_companies = 2
+    if current_companies == 0:
+        lc_levels = range(0, 11)
+    else:
+        opened_companies = max(current_companies - base_companies, 0)
+        lc_levels = range(0, opened_companies + 1)
 
-levels = range(0, 11)  # Skill seviyeleri 0-10
+    best_Z = -1
+    best_combination = None
 
-def skill_cost(level):
-    """Level N için gerekli skill point = 1 + 2 + ... + N"""
-    return level * (level + 1) // 2
+    for Lg, Lw, Lp, Lc in itertools.product(levels, levels, levels, lc_levels):
+        cost = skill_cost(Lg) + skill_cost(Lw) + skill_cost(Lp) + skill_cost(Lc)
+        if cost > S:
+            continue
+        Xp = 10 + 3*Lp
+        Xg = (30 + 5*Lg) * Xp / 10
+        Xw = (30 + 10*Lw) * Xp / 10
+        Xc = current_companies + Lc if current_companies > 0 else base_companies + Lc
+        Z_net = z * (1 - tax/100)
+        Z_total = 2.4*Q*Xg + 2.4*Z_net*Xw + K*Xc
 
-# ---------------- Lc seviyeleri (Company Limit) ----------------
-base_companies = 2  # oyun başında verilen 2 base şirket
+        if Z_total > best_Z:
+            best_Z = Z_total
+            best_combination = (Lg, Lw, Lp, Lc)
+            best_total_companies = Xc
 
-if current_companies == 0:
-    # kullanıcı 0 girerse kısıt kalkıyor, 12 şirket hakkı varmış gibi hesapla
-    lc_levels = range(0, 11)
-else:
-    # açılabilir maksimum şirket = mevcut şirket - 2 (base)
-    opened_companies = max(current_companies - base_companies, 0)
-    lc_levels = range(0, opened_companies + 1)
-
-best_Z = -1
-best_combination = None
-
-for Lg, Lw, Lp, Lc in itertools.product(levels, levels, levels, lc_levels):
-    cost = skill_cost(Lg) + skill_cost(Lw) + skill_cost(Lp) + skill_cost(Lc)
-    if cost > S:
-        continue
-
-    Xp = 10 + 3*Lp
-    Xg = (30 + 5*Lg) * Xp / 10
-    Xw = (30 + 10*Lw) * Xp / 10
-    Xc = current_companies + Lc if current_companies > 0 else base_companies + Lc  # toplam şirket
-
-    Z_net = z * (1 - tax_rate/100)  # maaş vergisi uygulanıyor
-
-    Z_total = 2.4*Q*Xg + 2.4*Z_net*Xw + K*Xc
-
-    if Z_total > best_Z:
-        best_Z = Z_total
-        best_combination = (Lg, Lw, Lp, Lc)
-
-# ---------------- Sonuç ----------------
-if best_combination:
-    print("\nEn iyi kombinasyon:")
-    print("Lg (Entrepreneurship):", best_combination[0])
-    print("Lw (Energy):", best_combination[1])
-    print("Lp (Production):", best_combination[2])
-    print("Lc (Company Limit):", best_combination[3])
-    print("Toplam şirket:", current_companies + best_combination[3] if current_companies > 0 else base_companies + best_combination[3])
-    print("Max Z (Günlük Max Kazanç):", round(best_Z, 2))
-else:
-    print("Geçerli bir kombinasyon bulunamadı!")
+    if best_combination:
+        st.success(f"""
+        **En iyi kombinasyon:**
+        - Lg (Entrepreneurship): {best_combination[0]}
+        - Lw (Energy): {best_combination[1]}
+        - Lp (Production): {best_combination[2]}
+        - Lc (Company Limit): {best_combination[3]}
+        - Toplam şirket: {best_total_companies}
+        - Max Z: {round(best_Z, 2)}
+        """)
