@@ -5,15 +5,28 @@ from PIL import Image
 st.title("Eco Skill Optimizer")
 
 # ---------------- Fotoğrafları yükle ----------------
-entrepreneur_img = Image.open(".devcontainer/entrepreneurship.png")
-energy_img = Image.open(".devcontainer/energy.png")
-company_limit_img = Image.open(".devcontainer/company_limit.png")
+images = {
+    "market": Image.open(".devcontainer/market.png"),
+    "comp_bonus": Image.open(".devcontainer/comp_bonus.png"),
+    "PP_maas": Image.open(".devcontainer/PP_maas.png"),
+    "tax": Image.open(".devcontainer/tax.png"),
+    "automated_engine": Image.open(".devcontainer/automated_engine.png"),
+    "skill_point": Image.open(".devcontainer/skill_point.png"),
+    "companies": Image.open(".devcontainer/companies.png"),
+    "entrepreneurship": Image.open(".devcontainer/entrepreneurship.png"),
+    "energy": Image.open(".devcontainer/energy.png"),
+    "production": Image.open(".devcontainer/production.png"),
+    "company_limit": Image.open(".devcontainer/company_limit.png")
+}
+
+ICON_WIDTH = 40  # input ikonları için boyut
+RESULT_ICON_WIDTH = 50  # sonuç ikonları için boyut
 
 # ---------------- Kullanıcı girdileri ----------------
 def get_float_input_with_icon(label, img, default="0.05"):
     col1, col2 = st.columns([1, 5])
     with col1:
-        st.image(img, width=30)
+        st.image(img, width=ICON_WIDTH)
     with col2:
         val_str = st.text_input(label, value=default)
         try:
@@ -23,14 +36,14 @@ def get_float_input_with_icon(label, img, default="0.05"):
             st.warning("Lütfen geçerli bir sayı girin (örn. 0.05).")
             st.stop()
 
-q_price = get_float_input_with_icon("Entrepreneur ile üreteceğin ürünün PP başına market fiyatı (örn. 0.05)", entrepreneur_img)
-q_bonus = get_float_input_with_icon("Şirketinin bonusu % (örn. 31)", entrepreneur_img)
+q_price = get_float_input_with_icon("Entrepreneur ile üreteceğin ürünün PP başına market fiyatı", images["market"])
+q_bonus = get_float_input_with_icon("Şirketinin bonusu % (örn. 31)", images["comp_bonus"])
 
-z = get_float_input_with_icon("Energy ile PP başına maaş (örn. 0.07)", energy_img)
-tax_rate = get_float_input_with_icon("Maaş vergisi % (örn. 5)", energy_img)
+z = get_float_input_with_icon("Energy ile PP başına maaş (örn. 0.07)", images["PP_maas"])
+tax_rate = get_float_input_with_icon("Maaş vergisi % (örn. 5)", images["tax"])
 
-k_price = get_float_input_with_icon("Kendi şirketinde ürettiğin ürünün PP başına market fiyatı (örn. 0.05)", company_limit_img)
-k_bonus = get_float_input_with_icon("Şirketlerinin bonusu % (örn. 31)", company_limit_img)
+k_price = get_float_input_with_icon("Kendi şirketinde ürettiğin ürünün PP başına market fiyatı (örn. 0.05)", images["market"])
+k_bonus = get_float_input_with_icon("Şirketlerinin bonusu % (örn. 31)", images["comp_bonus"])
 
 engine_level_str = st.text_input("Automated Engine Seviyesi (1-7)", "4")
 try:
@@ -96,18 +109,39 @@ if st.button("Hesapla"):
             best_combination = (Lg,Lw,Lp,Lc)
             best_total_companies = Xc
 
+    # ---------------- Sonuç ----------------
     if best_combination:
-        st.success(f"""
-**En iyi kombinasyon:**
-- Lg (Entrepreneurship): {best_combination[0]}
-- Lw (Energy): {best_combination[1]}
-- Lp (Production): {best_combination[2]}
-- Lc (Company Limit): {best_combination[3]}
-- Toplam şirket: {best_total_companies}
-- Max Z (Günlük Max Kazanç): {round(best_Z,2)}
-""")
+        st.markdown("### En iyi kombinasyon:")
+        result_cols = st.columns([1, 5])
+        with result_cols[0]:
+            st.image(images["entrepreneurship"], width=RESULT_ICON_WIDTH)
+        with result_cols[1]:
+            st.write(f"Lg (Entrepreneurship): {best_combination[0]}")
+
+        result_cols = st.columns([1, 5])
+        with result_cols[0]:
+            st.image(images["energy"], width=RESULT_ICON_WIDTH)
+        with result_cols[1]:
+            st.write(f"Lw (Energy): {best_combination[1]}")
+
+        result_cols = st.columns([1, 5])
+        with result_cols[0]:
+            st.image(images["production"], width=RESULT_ICON_WIDTH)
+        with result_cols[1]:
+            st.write(f"Lp (Production): {best_combination[2]}")
+
+        result_cols = st.columns([1, 5])
+        with result_cols[0]:
+            st.image(images["company_limit"], width=RESULT_ICON_WIDTH)
+        with result_cols[1]:
+            st.write(f"Lc (Company Limit): {best_combination[3]}")
+
+        st.write(f"Toplam şirket: {best_total_companies}")
+        st.write(f"Max Z (Günlük Max Kazanç): {round(best_Z,2)}")
+
     else:
         st.warning("Geçerli bir kombinasyon bulunamadı!")
 
 # ---------------- Alt bilgi ----------------
 st.markdown("Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)")
+
