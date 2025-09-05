@@ -10,15 +10,15 @@ lang = st.radio("Language / Dil", ["TR", "EN"])
 texts = {
     "input_labels": {
         "q_price": {"TR": "Entrepreneur ile üreteceğin ürünün PP başına market fiyatı", 
-                    "EN": "Market price per PP with Entrepreneur"},
-        "q_bonus": {"TR": "Şirketinin bonusu %", "EN": "Your company's bonus %"},
+                    "EN": "Market price per PP of the product you will produce with Entrepreneur"},
+        "q_bonus": {"TR": "Şirketinin bonusu %", "EN": "Your company's bonus % (Entrepreneurship Workplace)"},
         "z": {"TR": "Energy ile PP başına maaş", "EN": "Salary per PP with Energy"},
-        "tax_rate": {"TR": "Maaş vergisi %", "EN": "Salary tax %"},
+        "tax_rate": {"TR": "Maaş vergisi % (örn. %31 için aşağı sadece 31 yaz)", "EN": "Salary tax % (e.g. write down 31 for 31%)"},
         "k_price": {"TR": "Kendi şirketinde ürettiğin ürünün PP başına market fiyatı", 
-                    "EN": "Market price per PP in your company"},
-        "k_bonus": {"TR": "Şirketlerinin bonusu %", "EN": "Your companies' bonus %"},
-        "engine_level": {"TR": "Automated Engine Seviyesi (1-7)", "EN": "Automated Engine Level (1-7)"},
-        "S": {"TR": "Toplam Skill Puanı", "EN": "Total Skill Points"},
+                    "EN": "Market price per PP of the product you produce in your own company"},
+        "k_bonus": {"TR": "Şirketlerinin bonusu % (örn. %31 için aşağı sadece 31 yaz)", "EN": "Your companies' bonus % (e.g. write down 31 for 31%)"},
+        "engine_level": {"TR": "Automated Engine Seviyesi (1-7)", "EN": "Automated Engine Level (1-7) (All companies should be at same level)"},
+        "S": {"TR": "Toplam Skill Puanı", "EN": "Total Skill Points (Current Level * 4)"},
         "current_companies": {"TR": "Mevcut şirket sayısı (0 girersen kısıt kalkar)", 
                               "EN": "Current companies (0 removes limit)"}
     },
@@ -150,4 +150,5 @@ if st.button("Hesapla"):
 
 # ---------------- Alt bilgi ----------------
 st.markdown("Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)")
+
 
