@@ -23,9 +23,9 @@ texts = {
                     "EN": "Companies' bonus % (e.g. 31)"},
         "engine_level": {"TR": "Automated Engine Seviyesi (1-7)", 
                          "EN": "Automated Engine Level (1-7)"},
-        "S": {"TR": "Toplam Skill Puanı (Seviye*4)", 
-              "EN": "Total Skill Points = Level × 4"},
-        "current_companies": {"TR": "Mevcut şirket sayısı (0 sınırsız)", 
+        "S": {"TR": "Toplam Skill Puanı (Güncel Seviye × 4)", 
+              "EN": "Total Skill Points = Current Level × 4"},
+        "current_companies": {"TR": "Mevcut şirket sayısı (0 = sınırsız)", 
                               "EN": "Current companies (0 = no limit)"}
     },
     "results": {
@@ -155,3 +155,4 @@ if st.button("Hesapla"):
 
 # ---------------- Alt bilgi ----------------
 st.markdown("Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)")
+
