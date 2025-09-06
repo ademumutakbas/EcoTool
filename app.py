@@ -2,24 +2,7 @@ import streamlit as st
 import itertools
 from PIL import Image
 
-# ---------------- Sayfa ayarları ----------------
-st.set_page_config(
-    page_title="Eco Skill Optimizer",
-    page_icon=":seedling:",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
-
-# ---------------- Streamlit default elementlerini gizle ----------------
-hide_streamlit_style = """
-<style>
-#MainMenu {visibility: hidden;}
-header {visibility: hidden;}
-footer {visibility: hidden;}
-[data-testid="stDecoration"] {display: none;}
-</style>
-"""
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+st.set_page_config(page_title="Eco Skill Optimizer")
 
 # ---------------- Dil seçimi ----------------
 lang = st.radio("Language / Dil", ["TR", "EN"])
@@ -169,3 +152,8 @@ if st.button("Hesapla"):
         st.write(f"{texts['results']['max_z'][lang]}: {round(best_Z,2)}")
     else:
         st.warning("Geçerli bir kombinasyon bulunamadı! / No valid combination found!")
+
+# ---------------- Alt bilgi ----------------
+st.markdown("Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)")
+
+
