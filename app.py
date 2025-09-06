@@ -2,7 +2,35 @@ import streamlit as st
 import itertools
 from PIL import Image
 
-st.set_page_config(page_title="Eco Skill Optimizer")
+# ---------------- Sayfa ayarları ----------------
+st.set_page_config(
+    page_title="Eco Skill Optimizer",
+    layout="wide"
+)
+
+# ---------------- CSS ile stil ----------------
+st.markdown("""
+<style>
+/* Sağ üst hamburger menu ve github link gizle */
+header {visibility: hidden;}
+footer {visibility: hidden;}
+
+/* Inputları küçült */
+.stTextInput>div>div>input {
+    height: 30px;
+    font-size: 14px;
+}
+
+/* Başlık yazı tipi */
+.custom-font {
+    font-family: 'Courier New', monospace;
+    font-size: 28px;
+    font-weight: bold;
+    color: #2F4F4F;
+    text-align: center;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # ---------------- Dil seçimi ----------------
 lang = st.radio("Language / Dil", ["TR", "EN"])
@@ -39,25 +67,6 @@ texts = {
     }
 }
 
-# ---------------- CSS ----------------
-st.markdown("""
-<style>
-/* Inputları küçült */
-.stTextInput>div>div>input {
-    height: 30px;
-    font-size: 14px;
-}
-/* Başlık yazı tipi */
-.custom-font {
-    font-family: 'Courier New', monospace;
-    font-size: 28px;
-    font-weight: bold;
-    color: #2F4F4F;
-    text-align: center;
-}
-</style>
-""", unsafe_allow_html=True)
-
 # ---------------- Fotoğrafları yükle ----------------
 images = {
     "market": Image.open(".devcontainer/market.png"),
@@ -73,18 +82,20 @@ images = {
     "company_limit": Image.open(".devcontainer/company_limit.png")
 }
 
-INPUT_ICON_WIDTH = 60  # input ikonları
-RESULT_ICON_WIDTH = 50  # sonuç ikonları
+INPUT_ICON_WIDTH = 60
+RESULT_ICON_WIDTH = 50
 
-# ---------------- Kullanıcı girdileri (yan yana) ----------------
+# ---------------- Başlık ----------------
 st.markdown('<p class="custom-font">Eco Skill Optimizer</p>', unsafe_allow_html=True)
 
+# ---------------- Fonksiyon ----------------
 def get_float_input(label, default):
     return float(st.text_input(label, value=default))
 
 def get_int_input(label, default):
     return int(st.text_input(label, value=default))
 
+# ---------------- Kullanıcı girdileri (yan yana) ----------------
 # 1. Satır
 col1, col2, col3 = st.columns(3)
 with col1:
@@ -170,4 +181,4 @@ if st.button("Hesapla"):
         st.warning("Geçerli bir kombinasyon bulunamadı! / No valid combination found!")
 
 # ---------------- Alt bilgi ----------------
-st.markdown("Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)")
+st.markdown("Made by Monarch")
