@@ -11,7 +11,7 @@ texts = {
     "input_labels": {
         "q_price": {"TR": "Entrepreneur ile üreteceğin ürünün PP başına market fiyatı", 
                     "EN": "Market price per PP of the product you will produce with Entrepreneur"},
-        "q_bonus": {"TR": "Şirketinin bonusu % (örn. %31 için aşağı sadece 31 yaz)", "EN": "Your company's bonus % (Entrepreneurship Workplace)"},
+        "q_bonus": {"TR": "Şirketinin bonusu % (örn. %31 için aşağı sadece 31 yaz)", "EN": "Your company's bonus % (e.g. write down 31 for 31%)"},
         "z": {"TR": "Energy ile PP başına maaş", "EN": "Salary per PP with Energy"},
         "tax_rate": {"TR": "Maaş vergisi % (örn. %31 için aşağı sadece 31 yaz)", "EN": "Salary tax % (e.g. write down 31 for 31%)"},
         "k_price": {"TR": "Kendi şirketinde ürettiğin ürünün PP başına market fiyatı", 
@@ -150,6 +150,7 @@ if st.button("Hesapla"):
 
 # ---------------- Alt bilgi ----------------
 st.markdown("Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)")
+
 
 
 
