@@ -30,7 +30,7 @@ texts = {
     },
     "results": {
         "title": {"TR": "En iyi kombinasyon:", "EN": "Best combination:"},
-        "Lg": {"TR": ""Entrepreneurship Level", "EN": "Entrepreneurship Level"},
+        "Lg": {"TR": "Entrepreneurship Level", "EN": "Entrepreneurship Level"},
         "Lw": {"TR": "Energy Level", "EN": "Energy Level"},
         "Lp": {"TR": "Production Level", "EN": "Production Level"},
         "Lc": {"TR": "Company Limit Level", "EN": "Company Limit Level"},
@@ -155,5 +155,6 @@ if st.button("Hesapla"):
 
 # ---------------- Alt bilgi ----------------
 st.markdown("Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)")
+
 
 
