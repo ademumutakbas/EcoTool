@@ -11,31 +11,31 @@ texts = {
     "input_labels": {
         "q_price": {"TR": "Entrepreneur ürünü piyasa fiyatı (PP başına)", 
                     "EN": "Market price per PP (Entrepreneur)"},
-        "q_bonus": {"TR": "Şirket bonusu % (örn. 31 için 31 yaz)", 
-                    "EN": "Company bonus % (e.g. 31)"},
+        "q_bonus": {"TR": "Şirket bonusu (%)", 
+                    "EN": "Company bonus (%)"},
         "z": {"TR": "Enerji maaşı (PP başına)", 
               "EN": "Salary per PP (Energy)"},
-        "tax_rate": {"TR": "Maaş vergisi % (örn. 31 için 31 yaz)", 
-                     "EN": "Salary tax % (e.g. 31)"},
+        "tax_rate": {"TR": "Maaş vergisi (%)", 
+                     "EN": "Salary tax (%)"},
         "k_price": {"TR": "Kendi şirketinde ürün fiyatı (PP başına)", 
                     "EN": "Market price per PP (Own company)"},
-        "k_bonus": {"TR": "Kendi şirket bonusu % (örn. 31 için 31 yaz)", 
-                    "EN": "Companies' bonus % (e.g. 31)"},
+        "k_bonus": {"TR": "Kendi şirket bonusu (%)", 
+                    "EN": "Companies' bonus (%)"},
         "engine_level": {"TR": "Automated Engine Seviyesi (1-7)", 
                          "EN": "Automated Engine Level (1-7)"},
         "S": {"TR": "Toplam Skill Puanı (Güncel Seviye × 4)", 
-              "EN": "Total Skill Points = Current Level × 4"},
+              "EN": "Total Skill Points (Current Level × 4)"},
         "current_companies": {"TR": "Mevcut şirket sayısı (0 = sınırsız)", 
                               "EN": "Current companies (0 = no limit)"}
     },
     "results": {
         "title": {"TR": "En iyi kombinasyon:", "EN": "Best combination:"},
-        "Lg": {"TR": "Lg (Entrepreneurship)", "EN": "Lg (Entrepreneurship)"},
-        "Lw": {"TR": "Lw (Energy)", "EN": "Lw (Energy)"},
-        "Lp": {"TR": "Lp (Production)", "EN": "Lp (Production)"},
-        "Lc": {"TR": "Lc (Company Limit)", "EN": "Lc (Company Limit)"},
+        "Lg": {"TR": ""Entrepreneurship Level", "EN": "Entrepreneurship Level"},
+        "Lw": {"TR": "Energy Level", "EN": "Energy Level"},
+        "Lp": {"TR": "Production Level", "EN": "Production Level"},
+        "Lc": {"TR": "Company Limit Level", "EN": "Company Limit Level"},
         "total_companies": {"TR": "Toplam şirket", "EN": "Total companies"},
-        "max_z": {"TR": "Max Z (Günlük Max Kazanç)", "EN": "Max Z (Daily Profit)"}
+        "max_z": {"TR": "Günlük Max BTC Kazancı", "EN": "Max Daily BTC Profit"}
     }
 }
 
@@ -155,4 +155,5 @@ if st.button("Hesapla"):
 
 # ---------------- Alt bilgi ----------------
 st.markdown("Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)")
+
 
