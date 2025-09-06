@@ -9,18 +9,24 @@ lang = st.radio("Language / Dil", ["TR", "EN"])
 
 texts = {
     "input_labels": {
-        "q_price": {"TR": "Entrepreneur ile üreteceğin ürünün PP başına market fiyatı", 
-                    "EN": "Market price per PP of the product you will produce with Entrepreneur"},
-        "q_bonus": {"TR": "Şirketinin bonusu % (örn. %31 için aşağı sadece 31 yaz)", "EN": "Your company's bonus % (e.g. write down 31 for 31%)"},
-        "z": {"TR": "Energy ile PP başına maaş", "EN": "Salary per PP with Energy"},
-        "tax_rate": {"TR": "Maaş vergisi % (örn. %31 için aşağı sadece 31 yaz)", "EN": "Salary tax % (e.g. write down 31 for 31%)"},
-        "k_price": {"TR": "Kendi şirketinde ürettiğin ürünün PP başına market fiyatı", 
-                    "EN": "Market price per PP of the product you produce in your own company"},
-        "k_bonus": {"TR": "Şirketlerinin bonusu % (örn. %31 için aşağı sadece 31 yaz)", "EN": "Your companies' bonus % (e.g. write down 31 for 31%)"},
-        "engine_level": {"TR": "Automated Engine Seviyesi (1-7)", "EN": "Automated Engine Level (1-7) (All companies should be at same level)"},
-        "S": {"TR": "Toplam Skill Puanı", "EN": "Total Skill Points (Current Level * 4)"},
-        "current_companies": {"TR": "Mevcut şirket sayısı (0 girersen kısıt kalkar)", 
-                              "EN": "Current companies (0 removes limit)"}
+        "q_price": {"TR": "Entrepreneur ürünü piyasa fiyatı (PP başına)", 
+                    "EN": "Market price per PP (Entrepreneur)"},
+        "q_bonus": {"TR": "Şirket bonusu % (örn. 31 için 31 yaz)", 
+                    "EN": "Company bonus % (e.g. 31)"},
+        "z": {"TR": "Enerji maaşı (PP başına)", 
+              "EN": "Salary per PP (Energy)"},
+        "tax_rate": {"TR": "Maaş vergisi % (örn. 31 için 31 yaz)", 
+                     "EN": "Salary tax % (e.g. 31)"},
+        "k_price": {"TR": "Kendi şirketinde ürün fiyatı (PP başına)", 
+                    "EN": "Market price per PP (Own company)"},
+        "k_bonus": {"TR": "Kendi şirket bonusu % (örn. 31 için 31 yaz)", 
+                    "EN": "Companies' bonus % (e.g. 31)"},
+        "engine_level": {"TR": "Automated Engine Seviyesi (1-7)", 
+                         "EN": "Automated Engine Level (1-7)"},
+        "S": {"TR": "Toplam Skill Puanı (Seviye*4)", 
+              "EN": "Total Skill Points = Level × 4"},
+        "current_companies": {"TR": "Mevcut şirket sayısı (0 sınırsız)", 
+                              "EN": "Current companies (0 = no limit)"}
     },
     "results": {
         "title": {"TR": "En iyi kombinasyon:", "EN": "Best combination:"},
@@ -29,7 +35,7 @@ texts = {
         "Lp": {"TR": "Lp (Production)", "EN": "Lp (Production)"},
         "Lc": {"TR": "Lc (Company Limit)", "EN": "Lc (Company Limit)"},
         "total_companies": {"TR": "Toplam şirket", "EN": "Total companies"},
-        "max_z": {"TR": "Max Z (Günlük Max Kazanç)", "EN": "Max Z (Daily Max Profit)"}
+        "max_z": {"TR": "Max Z (Günlük Max Kazanç)", "EN": "Max Z (Daily Profit)"}
     }
 }
 
@@ -65,15 +71,6 @@ def get_float_input_with_icon(label_key, img, default="0.05"):
             st.warning("Lütfen geçerli bir sayı girin (örn. 0.05). / Enter a valid number (e.g., 0.05).")
             st.stop()
 
-# ---------------- Kullanıcı girdileri ----------------
-q_price = get_float_input_with_icon("q_price", images["market"])
-q_bonus = get_float_input_with_icon("q_bonus", images["comp_bonus"])
-z = get_float_input_with_icon("z", images["PP_maas"])
-tax_rate = get_float_input_with_icon("tax_rate", images["tax"])
-k_price = get_float_input_with_icon("k_price", images["market"])
-k_bonus = get_float_input_with_icon("k_bonus", images["comp_bonus"])
-
-# Diğer inputlar (integer)
 def get_int_input_with_icon(label_key, img, default="4"):
     col1, col2 = st.columns([1,5])
     with col1:
@@ -87,9 +84,17 @@ def get_int_input_with_icon(label_key, img, default="4"):
             st.warning("Lütfen geçerli bir tam sayı girin. / Enter a valid integer.")
             st.stop()
 
-engine_level = get_int_input_with_icon("engine_level", images["automated_engine"], "4")
-S = get_int_input_with_icon("S", images["skill_point"], "56")
-current_companies = get_int_input_with_icon("current_companies", images["companies"], "0")
+# ---------------- Kullanıcı girdileri ----------------
+q_price = get_float_input_with_icon("q_price", images["market"], default="0.05")
+q_bonus = get_float_input_with_icon("q_bonus", images["comp_bonus"], default="31")
+z = get_float_input_with_icon("z", images["PP_maas"], default="0.07")
+tax_rate = get_float_input_with_icon("tax_rate", images["tax"], default="8")
+k_price = get_float_input_with_icon("k_price", images["market"], default="0.05")
+k_bonus = get_float_input_with_icon("k_bonus", images["comp_bonus"], default="31")
+
+engine_level = get_int_input_with_icon("engine_level", images["automated_engine"], default="3")
+S = get_int_input_with_icon("S", images["skill_point"], default="56")
+current_companies = get_int_input_with_icon("current_companies", images["companies"], default="6")
 
 # ---------------- Hesaplama ----------------
 if st.button("Hesapla"):
@@ -150,7 +155,3 @@ if st.button("Hesapla"):
 
 # ---------------- Alt bilgi ----------------
 st.markdown("Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)")
-
-
-
-
