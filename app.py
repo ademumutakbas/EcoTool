@@ -5,32 +5,21 @@ from PIL import Image
 # ---------------- Sayfa ayarları ----------------
 st.set_page_config(
     page_title="Eco Skill Optimizer",
-    layout="wide"
+    page_icon=":seedling:",
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
-# ---------------- CSS ile stil ----------------
-st.markdown("""
+# ---------------- Streamlit default elementlerini gizle ----------------
+hide_streamlit_style = """
 <style>
-/* Sağ üst hamburger menu ve github link gizle */
+#MainMenu {visibility: hidden;}
 header {visibility: hidden;}
 footer {visibility: hidden;}
-
-/* Inputları küçült */
-.stTextInput>div>div>input {
-    height: 30px;
-    font-size: 14px;
-}
-
-/* Başlık yazı tipi */
-.custom-font {
-    font-family: 'Courier New', monospace;
-    font-size: 28px;
-    font-weight: bold;
-    color: #2F4F4F;
-    text-align: center;
-}
+[data-testid="stDecoration"] {display: none;}
 </style>
-""", unsafe_allow_html=True)
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 # ---------------- Dil seçimi ----------------
 lang = st.radio("Language / Dil", ["TR", "EN"])
@@ -82,46 +71,47 @@ images = {
     "company_limit": Image.open(".devcontainer/company_limit.png")
 }
 
-INPUT_ICON_WIDTH = 60
-RESULT_ICON_WIDTH = 50
-
-# ---------------- Başlık ----------------
-st.markdown('<p class="custom-font">Eco Skill Optimizer</p>', unsafe_allow_html=True)
+INPUT_ICON_WIDTH = 100  # input ikonları
+RESULT_ICON_WIDTH = 50  # sonuç ikonları
 
 # ---------------- Fonksiyon ----------------
-def get_float_input(label, default):
-    return float(st.text_input(label, value=default))
+def get_float_input_with_icon(label_key, img, default="0.05"):
+    col1, col2 = st.columns([1,5])
+    with col1:
+        st.image(img, width=INPUT_ICON_WIDTH)
+    with col2:
+        val_str = st.text_input(texts["input_labels"][label_key][lang], value=default, key=f"{label_key}_{lang}")
+        try:
+            val = float(val_str)
+            return val
+        except ValueError:
+            st.warning("Lütfen geçerli bir sayı girin (örn. 0.05). / Enter a valid number (e.g., 0.05).")
+            st.stop()
 
-def get_int_input(label, default):
-    return int(st.text_input(label, value=default))
+def get_int_input_with_icon(label_key, img, default="4"):
+    col1, col2 = st.columns([1,5])
+    with col1:
+        st.image(img, width=INPUT_ICON_WIDTH)
+    with col2:
+        val_str = st.text_input(texts["input_labels"][label_key][lang], value=default, key=f"{label_key}_{lang}")
+        try:
+            val = int(val_str)
+            return val
+        except ValueError:
+            st.warning("Lütfen geçerli bir tam sayı girin. / Enter a valid integer.")
+            st.stop()
 
-# ---------------- Kullanıcı girdileri (yan yana) ----------------
-# 1. Satır
-col1, col2, col3 = st.columns(3)
-with col1:
-    q_price = get_float_input(texts["input_labels"]["q_price"][lang], "0.05")
-with col2:
-    q_bonus = get_float_input(texts["input_labels"]["q_bonus"][lang], "31")
-with col3:
-    z = get_float_input(texts["input_labels"]["z"][lang], "0.07")
+# ---------------- Kullanıcı girdileri ----------------
+q_price = get_float_input_with_icon("q_price", images["market"], default="0.05")
+q_bonus = get_float_input_with_icon("q_bonus", images["comp_bonus"], default="31")
+z = get_float_input_with_icon("z", images["PP_maas"], default="0.07")
+tax_rate = get_float_input_with_icon("tax_rate", images["tax"], default="8")
+k_price = get_float_input_with_icon("k_price", images["market"], default="0.05")
+k_bonus = get_float_input_with_icon("k_bonus", images["comp_bonus"], default="31")
 
-# 2. Satır
-col4, col5, col6 = st.columns(3)
-with col4:
-    tax_rate = get_float_input(texts["input_labels"]["tax_rate"][lang], "8")
-with col5:
-    k_price = get_float_input(texts["input_labels"]["k_price"][lang], "0.05")
-with col6:
-    k_bonus = get_float_input(texts["input_labels"]["k_bonus"][lang], "31")
-
-# 3. Satır
-col7, col8, col9 = st.columns(3)
-with col7:
-    engine_level = get_int_input(texts["input_labels"]["engine_level"][lang], "3")
-with col8:
-    S = get_int_input(texts["input_labels"]["S"][lang], "56")
-with col9:
-    current_companies = get_int_input(texts["input_labels"]["current_companies"][lang], "6")
+engine_level = get_int_input_with_icon("engine_level", images["automated_engine"], default="3")
+S = get_int_input_with_icon("S", images["skill_point"], default="56")
+current_companies = get_int_input_with_icon("current_companies", images["companies"], default="6")
 
 # ---------------- Hesaplama ----------------
 if st.button("Hesapla"):
@@ -179,6 +169,3 @@ if st.button("Hesapla"):
         st.write(f"{texts['results']['max_z'][lang]}: {round(best_Z,2)}")
     else:
         st.warning("Geçerli bir kombinasyon bulunamadı! / No valid combination found!")
-
-# ---------------- Alt bilgi ----------------
-st.markdown("Made by Monarch")
