@@ -1,83 +1,244 @@
 import streamlit as st
 import itertools
 from PIL import Image
+import os
 
-st.set_page_config(page_title="Eco Skill Optimizer", layout="centered")
+# -------------------------------------------------
+# Page config
+# -------------------------------------------------
+st.set_page_config(
+    page_title="Eco Skill Optimizer",
+    layout="centered"
+)
 
-# ---------------- Language ----------------
+# -------------------------------------------------
+# Custom CSS (ikon + input hizalama + tipografi)
+# -------------------------------------------------
+st.markdown("""
+<style>
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.small-note {
+    font-size: 13px;
+    color: #8a8a8a;
+    margin-top: -6px;
+    margin-bottom: 8px;
+}
+
+.stTextInput input {
+    height: 48px;
+    font-size: 16px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# -------------------------------------------------
+# Language
+# -------------------------------------------------
 lang = st.radio("Language / Dil", ["TR", "EN"], horizontal=True)
 
-TEXT = {
-    "TR": {
-        "companies": "Toplam şirket sayısı (1–12, 0 = sınırsız)",
-        "engine": "Automated Engine Seviyesi (1–7)",
-        "bonus": "Sahip olduğunuz şirketlerin üretim bonusu (%)",
-        "price": "Üretilen ürünün market satış fiyatı (PP başına)",
-        "salary": "Çalıştığınız yerde aldığınız maaş (PP başına)",
-        "tax": "Aldığınız maaşın vergisi (%)",
-        "skill": "Toplam Skill Puanı (Güncel Seviye × 4)",
-        "calc": "Hesapla"
+# -------------------------------------------------
+# Texts
+# -------------------------------------------------
+T = {
+    "companies": {
+        "title": {
+            "TR": "Toplam şirket sayısı (1–12, 0 = sınırsız)",
+            "EN": "Total number of companies (1–12, 0 = unlimited)"
+        },
+        "note": {
+            "TR": "0 girildiğinde fabrika sayısındaki sınır kalkar.",
+            "EN": "If 0 is entered, the factory limit is removed."
+        }
     },
-    "EN": {
-        "companies": "Total number of companies (1–12, 0 = unlimited)",
-        "engine": "Automated Engine Level (1–7)",
-        "bonus": "Production bonus of owned companies (%)",
-        "price": "Market selling price of produced product (per PP)",
-        "salary": "Salary you earn (per PP)",
-        "tax": "Salary tax (%)",
-        "skill": "Total Skill Points (Current Level × 4)",
-        "calc": "Calculate"
+    "engine": {
+        "title": {
+            "TR": "Automated Engine Seviyesi (1–7)",
+            "EN": "Automated Engine Level (1–7)"
+        },
+        "note": {
+            "TR": "Bütün fabrikalarınızın eşit seviyede olduğu varsayılır.",
+            "EN": "All factories are assumed to be at the same level."
+        }
+    },
+    "bonus": {
+        "title": {
+            "TR": "Sahip olduğunuz şirketlerin üretim bonusu (%)",
+            "EN": "Production bonus of your companies (%)"
+        },
+        "note": {
+            "TR": "Tüm fabrikaların aynı ürünü ürettiği ve aynı bölgede çalıştığı varsayılır.",
+            "EN": "All factories are assumed to produce the same product in the same region."
+        }
+    },
+    "price": {
+        "title": {
+            "TR": "Kendi şirketlerinizde üretilen ürünün market satış fiyatı (PP başına)",
+            "EN": "Market sale price of products produced in your companies (per PP)"
+        },
+        "note": {
+            "TR": "Tek çeşit ürün ürettiğiniz baz alınır. Maksimum kâr sağlayan ürünü siz belirlemelisiniz.",
+            "EN": "Single type production is assumed. You should choose the most profitable product."
+        }
+    },
+    "salary": {
+        "title": {
+            "TR": "Çalıştığınız yerde aldığınız maaş (PP başına)",
+            "EN": "Salary you earn at your job (per PP)"
+        },
+        "note": {"TR": "", "EN": ""}
+    },
+    "tax": {
+        "title": {
+            "TR": "Aldığınız maaşın vergisi (%)",
+            "EN": "Tax on your salary (%)"
+        },
+        "note": {"TR": "", "EN": ""}
+    },
+    "skill": {
+        "title": {
+            "TR": "Toplam Skill Puanı",
+            "EN": "Total Skill Points"
+        },
+        "note": {
+            "TR": "Güncel Seviye × 4",
+            "EN": "Current Level × 4"
+        }
+    },
+    "result": {
+        "title": {"TR": "En İyi Skill Dağılımı", "EN": "Best Skill Distribution"},
+        "profit": {"TR": "Günlük Maksimum BTC Kazancı", "EN": "Maximum Daily BTC Profit"},
+        "companies": {"TR": "Toplam Şirket", "EN": "Total Companies"}
     }
 }
 
-T = TEXT[lang]
+# -------------------------------------------------
+# Images
+# -------------------------------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+def img(path):
+    return Image.open(os.path.join(BASE_DIR, path))
 
-# ---------------- Images ----------------
 images = {
-    "companies": Image.open(".devcontainer/companies.png"),
-    "engine": Image.open(".devcontainer/automated_engine.png"),
-    "bonus": Image.open(".devcontainer/comp_bonus.png"),
-    "market": Image.open(".devcontainer/market.png"),
-    "salary": Image.open(".devcontainer/PP_maas.png"),
-    "tax": Image.open(".devcontainer/tax.png"),
+    "companies": img(".devcontainer/companies.png"),
+    "engine": img(".devcontainer/automated_engine.png"),
+    "bonus": img(".devcontainer/comp_bonus.png"),
+    "market": img(".devcontainer/market.png"),
+    "salary": img(".devcontainer/PP_maas.png"),
+    "tax": img(".devcontainer/tax.png"),
+    "skill": img(".devcontainer/skill_point.png"),
+    "entrepreneurship": img(".devcontainer/entrepreneurship.png"),
+    "energy": img(".devcontainer/energy.png"),
+    "production": img(".devcontainer/production.png"),
+    "company_limit": img(".devcontainer/company_limit.png")
 }
 
-# ---------------- Input Helper ----------------
-def input_with_image(img, label, default):
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        st.image(img, use_container_width=True)
-    with col2:
-        return st.number_input(label, value=default)
+# -------------------------------------------------
+# Input component (ikon + input aynı hizada)
+# -------------------------------------------------
+def input_with_icon(title, note, icon, default, key):
+    st.markdown(f"### {title}")
+    if note:
+        st.markdown(f"<div class='small-note'>{note}</div>", unsafe_allow_html=True)
 
-# ---------------- Inputs ----------------
-companies = input_with_image(images["companies"], T["companies"], 6)
-engine_level = input_with_image(images["engine"], T["engine"], 3)
-bonus = input_with_image(images["bonus"], T["bonus"], 31.0)
-price = input_with_image(images["market"], T["price"], 0.05)
-salary = input_with_image(images["salary"], T["salary"], 0.07)
-tax = input_with_image(images["tax"], T["tax"], 8.0)
-skill_points = st.number_input(T["skill"], value=56)
+    col_icon, col_input = st.columns([1, 7])
+    with col_icon:
+        st.image(icon, width=44)
+    with col_input:
+        return st.text_input(
+            "",
+            value=default,
+            key=key,
+            label_visibility="collapsed"
+        )
 
-# ---------------- Calculation ----------------
-if st.button(T["calc"]):
+# -------------------------------------------------
+# Inputs
+# -------------------------------------------------
+current_companies = int(input_with_icon(
+    T["companies"]["title"][lang],
+    T["companies"]["note"][lang],
+    images["companies"],
+    "6",
+    "companies"
+))
+
+engine_level = int(input_with_icon(
+    T["engine"]["title"][lang],
+    T["engine"]["note"][lang],
+    images["engine"],
+    "3",
+    "engine"
+))
+
+company_bonus = float(input_with_icon(
+    T["bonus"]["title"][lang],
+    T["bonus"]["note"][lang],
+    images["bonus"],
+    "31",
+    "bonus"
+))
+
+price_pp = float(input_with_icon(
+    T["price"]["title"][lang],
+    T["price"]["note"][lang],
+    images["market"],
+    "0.05",
+    "price"
+))
+
+z = float(input_with_icon(
+    T["salary"]["title"][lang],
+    T["salary"]["note"][lang],
+    images["salary"],
+    "0.07",
+    "salary"
+))
+
+tax_rate = float(input_with_icon(
+    T["tax"]["title"][lang],
+    T["tax"]["note"][lang],
+    images["tax"],
+    "8",
+    "tax"
+))
+
+S = int(input_with_icon(
+    T["skill"]["title"][lang],
+    T["skill"]["note"][lang],
+    images["skill"],
+    "56",
+    "skill"
+))
+
+# -------------------------------------------------
+# Calculation
+# -------------------------------------------------
+if st.button("Hesapla / Calculate 🚀"):
+
+    Q = price_pp * (1 + company_bonus / 100)
     engine_values = {1:24,2:48,3:72,4:96,5:120,6:144,7:168}
-    K = price * (1 + bonus/100) * engine_values[int(engine_level)]
+    K = Q * engine_values[engine_level]
 
-    levels = range(0, 11)
-
-    def skill_cost(lvl):
-        return lvl * (lvl + 1) // 2
-
+    def skill_cost(l): return l * (l + 1) // 2
+    levels = range(11)
     base_companies = 2
-    lc_levels = range(0, 11) if companies == 0 else range(0, max(int(companies) - base_companies, 0) + 1)
 
-    best_profit = -1
+    if current_companies == 0:
+        lc_levels = range(11)
+    else:
+        lc_levels = range(max(current_companies - base_companies, 0) + 1)
+
+    best_Z = -1
     best_combo = None
+    best_companies = None
 
     for Lg, Lw, Lp, Lc in itertools.product(levels, levels, levels, lc_levels):
-        cost = skill_cost(Lg) + skill_cost(Lw) + skill_cost(Lp) + skill_cost(Lc)
-        if cost > skill_points:
+        if skill_cost(Lg)+skill_cost(Lw)+skill_cost(Lp)+skill_cost(Lc) > S:
             continue
 
         Xp = 10 + 3 * Lp
@@ -85,16 +246,43 @@ if st.button(T["calc"]):
         Xw = (30 + 10 * Lw) * Xp / 10
         Xc = base_companies + Lc
 
-        net_salary = salary * (1 - tax / 100)
-        profit = 2.4 * price * (1 + bonus/100) * Xg + 2.4 * net_salary * Xw + K * Xc
+        Z = (
+            2.4 * Q * Xg +
+            2.4 * z * (1 - tax_rate / 100) * Xw +
+            K * Xc
+        )
 
-        if profit > best_profit:
-            best_profit = profit
+        if Z > best_Z:
+            best_Z = Z
             best_combo = (Lg, Lw, Lp, Lc)
+            best_companies = Xc
 
-    st.subheader("Best Combination / En İyi Kombinasyon")
-    st.write("Entrepreneurship:", best_combo[0])
-    st.write("Energy:", best_combo[1])
-    st.write("Production:", best_combo[2])
-    st.write("Company Limit:", best_combo[3])
-    st.write("Max Profit:", round(best_profit, 2))
+    # -------------------------------------------------
+    # Results
+    # -------------------------------------------------
+    st.markdown("---")
+    st.markdown(f"## 🔝 {T['result']['title'][lang]}")
+
+    def result_row(label, icon, value):
+        col1, col2 = st.columns([1, 6])
+        with col1:
+            st.image(icon, width=40)
+        with col2:
+            st.markdown(f"**{label}:** {value}")
+
+    result_row("Entrepreneurship", images["entrepreneurship"], best_combo[0])
+    result_row("Energy", images["energy"], best_combo[1])
+    result_row("Production", images["production"], best_combo[2])
+    result_row("Company Limit", images["company_limit"], best_combo[3])
+
+    st.markdown(f"**{T['result']['companies'][lang]}:** {best_companies}")
+    st.markdown(f"**{T['result']['profit'][lang]}:** `{round(best_Z, 2)}`")
+
+# -------------------------------------------------
+# Footer
+# -------------------------------------------------
+st.markdown("---")
+st.markdown(
+    "Made by [Monarch](https://app.warera.io/user/681f630b1353a30ceefec393)",
+    unsafe_allow_html=True
+)
