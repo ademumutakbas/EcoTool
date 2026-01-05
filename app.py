@@ -12,16 +12,10 @@ st.set_page_config(
 )
 
 # -------------------------------------------------
-# Custom CSS (ikon + input hizalama + tipografi)
+# Custom CSS
 # -------------------------------------------------
 st.markdown("""
 <style>
-.input-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
 .small-note {
     font-size: 13px;
     color: #8a8a8a;
@@ -71,31 +65,31 @@ T = {
             "EN": "Production bonus of your companies (%)"
         },
         "note": {
-            "TR": "Tüm fabrikaların aynı ürünü ürettiği ve aynı bölgede çalıştığı varsayılır.",
-            "EN": "All factories are assumed to produce the same product in the same region."
+            "TR": "Tüm fabrikaların aynı ürünü ürettiği varsayılır.",
+            "EN": "All factories are assumed to produce the same product."
         }
     },
     "price": {
         "title": {
-            "TR": "Kendi şirketlerinizde üretilen ürünün market satış fiyatı (PP başına)",
-            "EN": "Market sale price of products produced in your companies (per PP)"
+            "TR": "Ürün market satış fiyatı (PP başına)",
+            "EN": "Market sale price (per PP)"
         },
         "note": {
-            "TR": "Tek çeşit ürün ürettiğiniz baz alınır. Maksimum kâr sağlayan ürünü siz belirlemelisiniz.",
-            "EN": "Single type production is assumed. You should choose the most profitable product."
+            "TR": "Tek ürün üzerinden hesaplanır.",
+            "EN": "Calculated for a single product."
         }
     },
     "salary": {
         "title": {
-            "TR": "Çalıştığınız yerde aldığınız maaş (PP başına)",
-            "EN": "Salary you earn at your job (per PP)"
+            "TR": "Maaş (PP başına)",
+            "EN": "Salary (per PP)"
         },
         "note": {"TR": "", "EN": ""}
     },
     "tax": {
         "title": {
-            "TR": "Aldığınız maaşın vergisi (%)",
-            "EN": "Tax on your salary (%)"
+            "TR": "Vergi oranı (%)",
+            "EN": "Tax rate (%)"
         },
         "note": {"TR": "", "EN": ""}
     },
@@ -105,13 +99,13 @@ T = {
             "EN": "Total Skill Points"
         },
         "note": {
-            "TR": "Güncel Seviye × 4",
-            "EN": "Current Level × 4"
+            "TR": "Seviye × 4",
+            "EN": "Level × 4"
         }
     },
     "result": {
         "title": {"TR": "En İyi Skill Dağılımı", "EN": "Best Skill Distribution"},
-        "profit": {"TR": "Günlük Maksimum BTC Kazancı", "EN": "Maximum Daily BTC Profit"},
+        "profit": {"TR": "Günlük Maksimum BTC", "EN": "Maximum Daily BTC"},
         "companies": {"TR": "Toplam Şirket", "EN": "Total Companies"}
     }
 }
@@ -120,6 +114,7 @@ T = {
 # Images
 # -------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 def img(path):
     return Image.open(os.path.join(BASE_DIR, path))
 
@@ -138,16 +133,23 @@ images = {
 }
 
 # -------------------------------------------------
-# Input component (ikon + input aynı hizada)
+# Input with icon (FINAL)
 # -------------------------------------------------
 def input_with_icon(title, note, icon, default, key):
     st.markdown(f"### {title}")
     if note:
         st.markdown(f"<div class='small-note'>{note}</div>", unsafe_allow_html=True)
 
-    col_icon, col_input = st.columns([1, 7])
+    col_icon, col_input = st.columns([2, 6])
+
     with col_icon:
-        st.image(icon, width=44)
+        st.markdown(
+            "<div style='display:flex; align-items:center; height:48px;'>",
+            unsafe_allow_html=True
+        )
+        st.image(icon, width=52)
+        st.markdown("</div>", unsafe_allow_html=True)
+
     with col_input:
         return st.text_input(
             "",
@@ -225,17 +227,13 @@ if st.button("Hesapla / Calculate 🚀"):
     K = Q * engine_values[engine_level]
 
     def skill_cost(l): return l * (l + 1) // 2
+
     levels = range(11)
     base_companies = 2
 
-    if current_companies == 0:
-        lc_levels = range(11)
-    else:
-        lc_levels = range(max(current_companies - base_companies, 0) + 1)
+    lc_levels = range(11) if current_companies == 0 else range(max(current_companies - base_companies, 0) + 1)
 
     best_Z = -1
-    best_combo = None
-    best_companies = None
 
     for Lg, Lw, Lp, Lc in itertools.product(levels, levels, levels, lc_levels):
         if skill_cost(Lg)+skill_cost(Lw)+skill_cost(Lp)+skill_cost(Lc) > S:
@@ -257,9 +255,6 @@ if st.button("Hesapla / Calculate 🚀"):
             best_combo = (Lg, Lw, Lp, Lc)
             best_companies = Xc
 
-    # -------------------------------------------------
-    # Results
-    # -------------------------------------------------
     st.markdown("---")
     st.markdown(f"## 🔝 {T['result']['title'][lang]}")
 
